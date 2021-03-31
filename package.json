@@ -1,0 +1,9 @@
+{
+  "name": "cytube",
+  "version": "0.0.1",
+  "main": "server.js",
+  "license": "GPL-3.0-only",
+  "dependencies": {
+    "ws": "^7.4.4"
+  }
+}
