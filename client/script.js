@@ -2,10 +2,9 @@
 // Thank you @PolyCement and @curvebreaker for the original!
 // Shouts out to boyznite
 
-const {
-    address: WEBSOCKET_ADDR,
-    timeout: WEBSOCKET_TIMEOUT
-  } = require("./settings.json");
+const
+  WEBSOCKET_ADDR = "wss://your_server_here",
+  WEBSOCKET_TIMEOUT = 31000;
 
 let updateState = () => console.log("TODO");
 
