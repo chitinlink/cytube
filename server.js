@@ -1,17 +1,18 @@
-const
-  WebSocketServer = require("ws").Server,
-  port = process.env.PORT || 5000;
+const { Server } = require("ws");
 
-const server = new WebSocketServer({ server });
-let sockets = [];
+const port = 443;
+
+const server = new Server({ port });
+
+let clients = [];
 
 server.on("connection", socket => {
-  sockets.push(socket);
+  clients.push(socket);
 
   socket.on("message", msg => {
     // TODO
-    sockets.forEach(s => s.send(msg));
+    clients.forEach(s => s.send(msg));
   });
 
-  socket.on("close", () => sockets = sockets.filter(s => s !== socket));
+  socket.on("close", () => clients = clients.filter(s => s !== socket));
 });
