@@ -1,28 +1,35 @@
 const
-  express = require("express"),
+  http = require("http"),
   { Server } = require("ws");
 
 const
-  INDEX = "/index.html",
   PORT = process.env.PORT || 3000,
   KEY = process.env.KEY || "";
 
-const server = express()
-  .use((req, res) => res.sendFile(INDEX, { root: __dirname }))
-  .listen(PORT, () => console.log(`Listening on ${PORT}`));
+const server = http.createServer((req, res) => {
+  console.log(`${req.method} ${req.url}`);
+  res.writeHead(404);
+  res.end();
+});
+
+server.listen(PORT, () => console.log(`Listening on ${PORT}`));
 
 const wss = new Server({ server });
-let clients = [];
 
-wss.on("connection", ws => {
-  console.log("url: ", ws.url);
-  console.log("Client connected");
+wss.on("connection", (ws, req) => {
+  console.log("Client connected", req.url);
 
   ws.on("message", data => {
-    // Heartbeat
-    if (data == "pong") ws.send("ping");
+    try { data = JSON.parse(data); }
+    catch (e) { console.log("Error:", e); }
 
-    //TODO
+    if (data.key === KEY) {
+      console.log("Message:", data);
+      // TODO
+    } else {
+      console.log("Received message with incorrect key:", data);
+    }
+
   });
 
   ws.on("close", () => console.log("Client disconnected"));
