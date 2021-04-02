@@ -5,7 +5,8 @@
 const
   WEBSOCKET_ADDR = "wss://your_server_here",
   WEBSOCKET_KEY = "YOUR_KEY_HERE",
-  WEBSOCKET_TIMEOUT = 31000;
+  WEBSOCKET_HEARTBEAT = 1000,
+  WEBSOCKET_TIMEOUT = 30000 + WEBSOCKET_HEARTBEAT;
 
 let createCutout = (image_url, name) => {
   let e = document.createElement("img");
@@ -26,8 +27,21 @@ let connect = () => {
   const socket = new WebSocket(WEBSOCKET_ADDR);
   let connected = false;
 
+  // Heartbeat
+  let heartbeat = () => {
+    console.log("WS - Heartbeat");
+
+    clearTimeout(pingTimeout);
+    pingTimeout = setTimeout(() => socket.close(), WEBSOCKET_TIMEOUT);
+
+    setTimeout(() => socket.send("pong"), WEBSOCKET_HEARTBEAT);
+  }
+
   // Receive message
   socket.addEventListener("message", e => {
+    // Heartbeat
+    if (e === "ping") return heartbeat();
+
     console.log("WS - Message:", e.data);
 
     updateState(JSON.parse(e.data));
@@ -43,6 +57,7 @@ let connect = () => {
     document.getElementById("messagebuffer").appendChild(m);
 
     connected = true;
+    heartbeat();
   });
 
   // Disconnect

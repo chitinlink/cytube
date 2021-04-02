@@ -20,6 +20,10 @@ wss.on("connection", (ws, req) => {
   console.log("Client connected", req.url);
 
   ws.on("message", data => {
+    // Heartbeat
+    if (data == "pong") return ws.send("ping");
+
+    // Actual message
     try { data = JSON.parse(data); }
     catch (e) { console.log("Error:", e); }
 
@@ -29,7 +33,6 @@ wss.on("connection", (ws, req) => {
     } else {
       console.log("Received message with incorrect key:", data);
     }
-
   });
 
   ws.on("close", () => console.log("Client disconnected"));
