@@ -3,8 +3,9 @@ const
   { Server } = require("ws");
 
 const
+  INDEX = "/index.html",
   PORT = process.env.PORT || 3000,
-  INDEX = "/index.html";
+  KEY = process.env.KEY || "";
 
 const server = express()
   .use((req, res) => res.sendFile(INDEX, { root: __dirname }))
@@ -14,15 +15,15 @@ const wss = new Server({ server });
 let clients = [];
 
 wss.on("connection", ws => {
+  console.log("url: ", ws.url);
   console.log("Client connected");
 
-  ws.on("close", () => {
-    console.log("Client disconnected")
-  });
-});
+  ws.on("message", data => {
+    // Heartbeat
+    if (data == "pong") clients.send("ping");
 
-setInterval(() => {
-  wss.clients.forEach((client) => {
-    client.send(new Date().toTimeString());
+    //TODO
   });
-}, 1000);
+
+  ws.on("close", () => console.log("Client disconnected"));
+});

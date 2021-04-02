@@ -4,7 +4,16 @@
 
 const
   WEBSOCKET_ADDR = "wss://your_server_here",
+  WEBSOCKET_KEY = "YOUR_KEY_HERE",
   WEBSOCKET_TIMEOUT = 31000;
+
+let createCutout = (image_url, name) => {
+  let e = document.createElement("img");
+  e.src = image_url;
+  e.classList.add("cutout");
+  e.id = `cutout-${name}`;
+  return e;
+};
 
 let updateState = () => console.log("TODO");
 
