@@ -20,7 +20,7 @@ wss.on("connection", ws => {
 
   ws.on("message", data => {
     // Heartbeat
-    if (data == "pong") clients.send("ping");
+    if (data == "pong") ws.send("ping");
 
     //TODO
   });
