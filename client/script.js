@@ -1,38 +1,143 @@
-// @technoabyss 2021 galaxybra.in
-// Thank you @PolyCement and @curvebreaker for the original!
-// Shouts out to boyznite
+// By @technoabyss 2021 galaxybra.in
+// https://github.com/technoabyss/cytube
+// Thank you @PolyCement and @curvebreaker for the original concept!
+// Shouts out to boyznite!
+//
+// To see the UI/move cutouts you must have the "Drink calls" permission.
+// I recommend setting that to channel admin only.
 
 const
   WEBSOCKET_ADDR = "wss://your_server_here",
-  WEBSOCKET_KEY = "YOUR_KEY_HERE",
   WEBSOCKET_HEARTBEAT = 1000,
   WEBSOCKET_TIMEOUT = 30000 + WEBSOCKET_HEARTBEAT;
 
-let createCutout = (image_url, name) => {
-  let e = document.createElement("img");
+const videowrap = document.getElementById("ytapiplayer").parentElement;
+
+// Utils
+const createCutout = (id, image_url) => {
+  let
+    c = document.createElement("div"),
+    e = document.createElement("img");
+  c.appendChild(e);
+  c.classList.add("cutout");
+  c.id = `cutout-${id}`;
+  c.style = "--x:0px;--y:0px;";
   e.src = image_url;
-  e.classList.add("cutout");
-  e.id = `cutout-${name}`;
-  return e;
+  return c;
 };
 
-let updateState = data => {
-  //TODO
+const createButton = (id, text) => {
+  let b = document.createElement("button");
+  b.classList.add("btn", "btn-sm", "btn-default");
+  b.id = id;
+  b.innerText = text;
+  return b;
 };
+
+const createDropdown = (id, options) => {
+  let d = document.createElement("select");
+  d.id = id;
+  options.forEach(o => {
+    let op = document.createElement("option");
+    op.id = `${id}-${o[0]}`;
+    op.value = o[0];
+    op.innerText = o[1];
+    d.appendChild(op);
+  });
+  return d;
+};
+
+const serverMessage = (type, msg) => {
+  let m = document.createElement("div");
+  m.className = `server-msg-${type}`;
+  m.innerText = msg;
+  document.getElementById("messagebuffer").appendChild(m);
+  scrollChat();
+};
+
+const setAspectRatio = ratio => {
+  if (ratio === "16by9") {
+    videowrap.classList
+      .replace("embed-responsive-4by3", "embed-responsive-16by9");
+  } else if (ratio === "4by3") {
+    videowrap.classList
+      .replace("embed-responsive-16by9", "embed-responsive-4by3");
+  } else return console.error("Unknown aspect ratio");
+
+  updateState("aspect_ratio", ratio);
+
+  // Doing this makes the chat resize to match
+  CyTube.ui.changeVideoWidth(1);
+  CyTube.ui.changeVideoWidth(-1);
+
+  // Resizing the chat also means we gotta scroll it to the newest message
+  scrollChat();
+};
+
+const updateState = data => {
+  //FIXME
+};
+
+// UI
+const setupAdminPanel = () => {
+  // Add context for CSS styles
+  document.body.classList.add("admin");
+
+  // Admin Panel
+  let panel = document.createElement("div");
+  panel.id = "admin-panel";
+  document.body.appendChild(panel);
+
+  // Key input
+  let keyinput = document.createElement("input");
+  keyinput.id = "key"
+  keyinput.type = "text";
+  keyinput.placeholder = "Key"
+  panel.appendChild(keyinput);
+  panel.appendChild(createButton("keysubmit", "➡"));
+  let keysubmit = document.getElementById("keysubmit");
+  keysubmit.addEventListener("click", () => {
+    keysubmit.disabled = true;
+    keysubmit.style.display = "none";
+    document.getElementById("key").hidden = true;
+    document.getElementById("admin-controls").disabled = false;
+  });
+
+  // Controls
+  let fieldset = document.createElement("fieldset");
+  fieldset.id = "admin-controls";
+  fieldset.disabled = true;
+  panel.appendChild(fieldset);
+
+  // Aspect ratios
+  fieldset.appendChild(
+    createDropdown("admin-aspectratio", [["16by9", "16:9"], ["4by3", "4:3"]])
+  );
+  document.getElementById("admin-aspectratio")
+    .addEventListener("change", e => setAspectRatio(e.target.value));
+
+  // Effects
+  // fieldset.appendChild(createButton("flipH", "FlipH"));
+  // document.getElementById("flipH")
+  //   .addEventListener("click", toggleFlipH);
+  // fieldset.appendChild(createButton("flipV", "FlipV"));
+  // document.getElementById("flipV")
+  //   .addEventListener("click", toggleFlipV);
+}
 
 // Websocket stuff below.
 // Whenever the websocket receives data (other than a heartbeat), it passes
 // it to updateState.
-let connect = () => {
+const connect = () => {
   const socket = new WebSocket(WEBSOCKET_ADDR);
-  let connected = false;
+  let
+    connected = false,
+    pingTimeout;
 
   // Heartbeat
   let heartbeat = () => {
-    console.log("WS - Heartbeat");
-
     clearTimeout(pingTimeout);
-    pingTimeout = setTimeout(() => socket.close(), WEBSOCKET_TIMEOUT);
+    pingTimeout = setTimeout(socket.close, WEBSOCKET_TIMEOUT);
 
     setTimeout(() => socket.send("pong"), WEBSOCKET_HEARTBEAT);
   }
@@ -40,7 +145,7 @@ let connect = () => {
   // Receive message
   socket.addEventListener("message", e => {
     // Heartbeat
-    if (e === "ping") return heartbeat();
+    if (e.data === "ping") return heartbeat();
 
     console.log("WS - Message:", e.data);
 
@@ -50,12 +155,7 @@ let connect = () => {
   // Connect
   socket.addEventListener("open", () => {
     console.log("WS - Connected");
-
-    let m = document.createElement("div");
-    m.innerText = "Connected to websocket";
-    m.className = "server-msg-reconnect";
-    document.getElementById("messagebuffer").appendChild(m);
-
+    serverMessage("reconnect", "Connected to websocket");
     connected = true;
     heartbeat();
   });
@@ -63,27 +163,27 @@ let connect = () => {
   // Disconnect
   socket.addEventListener("close", () => {
     if (connected) {
-      console.log("WS - Connection lost");
-
-      let m = document.createElement("div");
-      m.innerText = "Disconnected from websocket";
-      m.className = "server-msg-disconnect";
-      document.getElementById("messagebuffer").appendChild(m);
+      console.log("WS - Disconnected");
+      serverMessage("disconnect", "Disconnected from websocket");
     }
-
     connected = false;
     connect();
   });
-
-  // Error
-  socket.addEventListener("error", e => {
-    console.log("WS - Error:", e);
-
-    let m = document.createElement("div");
-    m.innerText = e;
-    m.className = "server-msg-disconnect";
-    document.getElementById("messagebuffer").appendChild(m);
-  })
 };
 
-connect();
+// Maybe overdoing it?
+
+console.debug("CLIENT", CLIENT);
+
+const do_setup = () => {
+  console.debug("Doing setup");
+
+  const OP = hasPermission("drink");
+  console.debug("OP", OP);
+
+  connect();
+  if (OP) setupAdminPanel();
+};
+
+if (document.readyState === "complete") { do_setup() }
+else window.addEventListener("load", do_setup);
