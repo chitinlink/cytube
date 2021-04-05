@@ -14,7 +14,7 @@ const
 /* -------------------------------------------------------------------------- */
 
 const videowrap = document.getElementById("ytapiplayer").parentElement;
-let state, admin_key;
+let socket, state, admin_key;
 
 // Utils
 const createCutout = (id, image_url) => {
@@ -76,7 +76,7 @@ const setAspectRatio = ratio => {
   scrollChat();
 
   state["aspect_ratio"] = ratio;
-  updateState();
+  sendState();
 };
 
 const initState = () => {
@@ -86,10 +86,13 @@ const initState = () => {
     "aspect_ratio": aspect_ratio,
     "cutouts": []
   };
-  console.debug(state);
 }
 
-const updateState = () => {
+const receiveState = state => {
+  //TODO
+};
+
+const sendState = () => {
   console.info("Sending state:", state);
   socket.send(JSON.stringify({ key: admin_key, state }))
 };
@@ -121,7 +124,7 @@ const setupAdminPanel = () => {
     // Set the admin key to whatever you typed in
     admin_key = adminkeyinput.value;
     // And broadcast your state to everyone else
-    updateState();
+    sendState();
   });
 
   // Controls
@@ -148,9 +151,9 @@ const setupAdminPanel = () => {
 
 // Websocket stuff below.
 // Whenever the websocket receives data (other than a heartbeat), it passes
-// it to updateState.
+// it to receiveState.
 const connect = () => {
-  const socket = new WebSocket(WEBSOCKET_ADDR);
+  socket = new WebSocket(WEBSOCKET_ADDR);
   let
     connected = false,
     pingTimeout;
@@ -170,7 +173,7 @@ const connect = () => {
 
     console.info("WS - Message:", e.data);
 
-    updateState(JSON.parse(e.data));
+    receiveState(JSON.parse(e.data));
   });
 
   // Connect
