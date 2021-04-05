@@ -89,7 +89,7 @@ const initState = () => {
 }
 
 const receiveState = state => {
-  //TODO
+  setAspectRatio(state["aspect_ratio"]);
 };
 
 const sendState = () => {
