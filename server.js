@@ -36,7 +36,7 @@ wss.on("connection", (ws, req) => {
 
       // Update state
       state = data.state;
-      wss.clients
+      [...wss.clients]
         .filter(c => c !== ws)
         .forEach(c => c.send(JSON.stringify(state)));
     } else console.warn("Received message with incorrect key:", data);
