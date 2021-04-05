@@ -14,9 +14,6 @@
   color: #aaa;
   padding: 4px;
 }
-#key {
-  width: 6ch;
-}
 .cutout {
   left: var(--x);
   top: var(--y);

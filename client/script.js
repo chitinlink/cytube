@@ -11,7 +11,10 @@ const
   WEBSOCKET_HEARTBEAT = 1000,
   WEBSOCKET_TIMEOUT = 30000 + WEBSOCKET_HEARTBEAT;
 
+/* -------------------------------------------------------------------------- */
+
 const videowrap = document.getElementById("ytapiplayer").parentElement;
+let state, admin_key;
 
 // Utils
 const createCutout = (id, image_url) => {
@@ -76,7 +79,6 @@ const setAspectRatio = ratio => {
   updateState();
 };
 
-let state;
 const initState = () => {
   let aspect_ratio = (document.querySelector("#videowrap .embed-responsive").classList.contains("embed-responsive-16by9") ? "16by9" : "4by3");
 
@@ -87,7 +89,10 @@ const initState = () => {
   console.debug(state);
 }
 
-const updateState = () => socket.send(JSON.stringify({ key: admin_key, state }));
+const updateState = () => {
+  console.info("Sending state:", state);
+  socket.send(JSON.stringify({ key: admin_key, state }))
+};
 
 // UI
 const setupAdminPanel = () => {
@@ -102,14 +107,21 @@ const setupAdminPanel = () => {
   // Key input
   let adminkeyform = document.createElement("form");
   let adminkeyinput = document.createElement("input");
-  // adminkeyinput.id = "adminkey"
   adminkeyinput.type = "text";
-  adminkeyinput.placeholder = "Key"
+  adminkeyinput.placeholder = "Admin key"
   panel.appendChild(adminkeyform);
   adminkeyform.appendChild(adminkeyinput);
-  adminkeyform.addEventListener("submit", () => {
+
+  // You're supposed to enter the admin key, and then hit Enter
+  adminkeyform.addEventListener("submit", e => {
+    e.preventDefault();
+    // Then we hide the text input,
     adminkeyform.hidden = true;
     document.getElementById("admin-controls").disabled = false;
+    // Set the admin key to whatever you typed in
+    admin_key = adminkeyinput.value;
+    // And broadcast your state to everyone else
+    updateState();
   });
 
   // Controls
@@ -156,14 +168,14 @@ const connect = () => {
     // Heartbeat
     if (e.data === "ping") return heartbeat();
 
-    console.log("WS - Message:", e.data);
+    console.info("WS - Message:", e.data);
 
     updateState(JSON.parse(e.data));
   });
 
   // Connect
   socket.addEventListener("open", () => {
-    console.log("WS - Connected");
+    console.info("WS - Connected");
     serverMessage("reconnect", "Connected to websocket");
     connected = true;
     heartbeat();
@@ -172,7 +184,7 @@ const connect = () => {
   // Disconnect
   socket.addEventListener("close", () => {
     if (connected) {
-      console.log("WS - Disconnected");
+      console.info("WS - Disconnected");
       serverMessage("disconnect", "Disconnected from websocket");
     }
     connected = false;

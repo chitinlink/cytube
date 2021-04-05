@@ -22,6 +22,7 @@ wss.on("connection", (ws, req) => {
   console.info("Client connected", req.url);
 
   ws.on("message", data => {
+    console.debug("Received", data);
     // Heartbeat
     if (data == "pong") return ws.send("ping");
 
