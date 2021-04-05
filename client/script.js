@@ -64,19 +64,30 @@ const setAspectRatio = ratio => {
       .replace("embed-responsive-16by9", "embed-responsive-4by3");
   } else return console.error("Unknown aspect ratio");
 
-  updateState("aspect_ratio", ratio);
 
-  // Doing this makes the chat resize to match
-  CyTube.ui.changeVideoWidth(1);
-  CyTube.ui.changeVideoWidth(-1);
+  // // Doing this makes the chat resize to match
+  // // this changes the video size if it's already maxed, though
+  // CyTube.ui.changeVideoWidth(1);
+  // CyTube.ui.changeVideoWidth(-1);
 
-  // Resizing the chat also means we gotta scroll it to the newest message
   scrollChat();
+
+  state["aspect_ratio"] = ratio;
+  updateState();
 };
 
-const updateState = data => {
-  //FIXME
-};
+let state;
+const initState = () => {
+  let aspect_ratio = (document.querySelector("#videowrap .embed-responsive").classList.contains("embed-responsive-16by9") ? "16by9" : "4by3");
+
+  state = {
+    "aspect_ratio": aspect_ratio,
+    "cutouts": []
+  };
+  console.debug(state);
+}
+
+const updateState = () => socket.send(JSON.stringify({ key: admin_key, state }));
 
 // UI
 const setupAdminPanel = () => {
@@ -89,17 +100,15 @@ const setupAdminPanel = () => {
   document.body.appendChild(panel);
 
   // Key input
-  let keyinput = document.createElement("input");
-  keyinput.id = "key"
-  keyinput.type = "text";
-  keyinput.placeholder = "Key"
-  panel.appendChild(keyinput);
-  panel.appendChild(createButton("keysubmit", "➡"));
-  let keysubmit = document.getElementById("keysubmit");
-  keysubmit.addEventListener("click", () => {
-    keysubmit.disabled = true;
-    keysubmit.style.display = "none";
-    document.getElementById("key").hidden = true;
+  let adminkeyform = document.createElement("form");
+  let adminkeyinput = document.createElement("input");
+  // adminkeyinput.id = "adminkey"
+  adminkeyinput.type = "text";
+  adminkeyinput.placeholder = "Key"
+  panel.appendChild(adminkeyform);
+  adminkeyform.appendChild(adminkeyinput);
+  adminkeyform.addEventListener("submit", () => {
+    adminkeyform.hidden = true;
     document.getElementById("admin-controls").disabled = false;
   });
 
@@ -182,6 +191,7 @@ const do_setup = () => {
   console.debug("OP", OP);
 
   connect();
+  initState();
   if (OP) setupAdminPanel();
 };
 

@@ -7,17 +7,19 @@ const
   KEY = process.env.KEY || "";
 
 const server = http.createServer((req, res) => {
-  console.log(`${req.method} ${req.url}`);
+  console.info(`${req.method} ${req.url}`);
   res.writeHead(404);
   res.end();
 });
 
-server.listen(PORT, () => console.log(`Listening on ${PORT}`));
+server.listen(PORT, () => console.info(`Listening on ${PORT}`));
 
 const wss = new Server({ server });
 
+let state = {};
+
 wss.on("connection", (ws, req) => {
-  console.log("Client connected", req.url);
+  console.info("Client connected", req.url);
 
   ws.on("message", data => {
     // Heartbeat
@@ -25,15 +27,17 @@ wss.on("connection", (ws, req) => {
 
     // Actual message
     try { data = JSON.parse(data); }
-    catch (e) { console.log("Error:", e); }
+    catch (e) { console.error("Error:", e); }
 
+    // Confirm key
     if (data.key === KEY) {
-      console.log("Message:", data);
-      // TODO
-    } else {
-      console.log("Received message with incorrect key:", data);
-    }
+      console.info("Message:", data);
+
+      // Update state
+      state = data.state;
+      wss.clients.forEach(c => c.send(JSON.stringify(state)));
+    } else console.warning("Received message with incorrect key:", data);
   });
 
-  ws.on("close", () => console.log("Client disconnected"));
+  ws.on("close", () => console.info("Client disconnected"));
 });
