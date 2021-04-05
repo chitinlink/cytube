@@ -39,7 +39,7 @@ wss.on("connection", (ws, req) => {
       wss.clients
         .filter(c => c !== ws)
         .forEach(c => c.send(JSON.stringify(state)));
-    } else console.warning("Received message with incorrect key:", data);
+    } else console.warn("Received message with incorrect key:", data);
   });
 
   ws.on("close", () => console.info("Client disconnected"));
