@@ -21,6 +21,9 @@ let state = {};
 wss.on("connection", (ws, req) => {
   console.info("Client connected", req.url);
 
+  // Send client current state
+  ws.send(JSON.stringify(state));
+
   ws.on("message", data => {
     // Heartbeat
     if (data == "pong") return ws.send("ping");
@@ -31,14 +34,18 @@ wss.on("connection", (ws, req) => {
 
     // Confirm key
     if (data.key === KEY) {
-      console.info("Message:", data);
+      console.info("Received state:", data.state);
 
       // Update state
       state = data.state;
+
+      // Send to other clients
       [...wss.clients]
         .filter(c => c !== ws)
         .forEach(c => c.send(JSON.stringify(state)));
-    } else console.warn("Received message with incorrect key:", data);
+    } else {
+      console.warn("Received message with incorrect key:", data);
+    }
   });
 
   ws.on("close", () => console.info("Client disconnected"));

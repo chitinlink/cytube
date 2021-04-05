@@ -3,8 +3,10 @@
 // Thank you @PolyCement and @curvebreaker for the original concept!
 // Shouts out to boyznite!
 //
-// To see the UI/move cutouts you must have the "Drink calls" permission.
-// I recommend setting that to channel admin only.
+// This script is designed to be used as the Custom JS on a cytube channel,
+// with an accompanying websocket server (see server.js). Tested with Heroku.
+// To see and use the admin panel, as well as edit cutouts you must have the
+// "Drink calls" permission. I recommend setting that to channel admin only.
 
 const
   WEBSOCKET_ADDR = "wss://your_server_here",
@@ -197,12 +199,9 @@ const connect = () => {
 
 // Maybe overdoing it?
 
-console.debug("CLIENT", CLIENT);
-
 const do_setup = () => {
-  console.debug("Doing setup");
-
   const OP = hasPermission("drink");
+  // FIXME sometimes it's false when it should be true, probably because this is loading at the wrong time
   console.debug("OP", OP);
 
   connect();
