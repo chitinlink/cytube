@@ -1,14 +1,19 @@
+/* Admin Panel */
 #admin-panel {
   position: fixed;
   bottom: 0;
   background: #0c0c0c;
   padding: 1em;
 }
-#admin-panel > * {
+#admin-panel fieldset > * {
   margin-right: 1ch;
   font-size: 8pt;
 }
-#admin-panel input[type="text"], #admin-panel select {
+#admin-panel form { display: inline-block }
+#admin-panel input[type="text"],
+#admin-panel input[type="url"],
+#admin-panel select
+{
   background: #000;
   border: 1px solid #aaa;
   color: #aaa;
@@ -19,3 +24,10 @@
   top: var(--y);
   position: absolute;
 }
+
+/* Effects */
+#eff_flipH.on { transform: rotateY(180deg) }
+#eff_flipV.on { transform: rotateX(180deg) }
+
+/* Transitions */
+#videowrap * { transition: transform .2s, filter .2s, padding .2s }
