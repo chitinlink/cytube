@@ -6,6 +6,7 @@
 #admin-panel {
   position: fixed;
   bottom: 0;
+  right: 0;
   background: #0c0c0c;
   padding: 1em;
 }
@@ -120,7 +121,7 @@ body { background: #111111; }
 }
 
 /* No mod colors */
-.userlist_owner { color: none !important }
+.userlist_owner { color: unset !important }
 #modflair { display: none !important }
 
 /* Remove unnecessary padding */
