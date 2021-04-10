@@ -1,4 +1,8 @@
-/* Admin Panel */
+:root {
+  --player-bg: url("http://www.ufointernationalproject.com/wp-content/uploads/2017/03/space-03.jpg");
+}
+
+/* ------- Admin Panel ------------------------------------------------------ */
 #admin-panel {
   position: fixed;
   bottom: 0;
@@ -31,3 +35,118 @@
 
 /* Transitions */
 #videowrap * { transition: transform .2s, filter .2s, padding .2s }
+
+/* Hide things */
+footer, #sitefooter,
+#drinkbarwrap,
+#announcements, #motdrow
+{ display: none !important }
+
+/* ------- General look ----------------------------------------------------- */
+/* Dark scrollbar */
+:root { scrollbar-color: #444 #060606 }
+
+/* No round edges */
+* { border-radius: 0 !important }
+
+/* Player background */
+.embed-responsive {
+  background-image: var(--player-bg);
+  background-size: cover;
+  background-position: center;
+}
+
+/* Dark background */
+body { background: #111111; }
+
+/* Remove stupid padding thing here */
+#mainpage { padding-top: unset }
+.navbar-fixed-top { position: unset }
+
+/* Navbar */
+.navbar {
+  background: transparent !important;
+  border: none;
+  min-height: unset !important;
+  margin: 0;
+}
+.navbar li a { border: none !important; }
+.navbar-brand { font-size: 0 }
+.navbar-brand:before{
+  font-size: 16px;
+  content: var(--room-name);
+  font-family: Courier New, monospace;
+  font-weight: bold;
+}
+.navbar-nav > li > a, .navbar-brand, #logoutform {
+  padding-top: unset;
+  margin-top: unset;
+  padding-bottom: unset;
+  margin-bottom: unset;
+  height: unset;
+  line-height: unset;
+  margin: 5px 0;
+}
+#logoutform { margin-right: 10px; }
+
+/* No box shadow in text inputs */
+.form-control:focus { box-shadow: none !important; }
+
+/* Username aligns to top of message */
+.username { vertical-align: top }
+
+/* Less bright border color on most things */
+.form-control, #chatheader, #videowrap-header,
+#userlist, #messagebuffer, #plmeta, .queue_entry
+{ border-color: #484848 !important; }
+
+/* Remove extra border on chat input */
+#chatline { background: #000 !important; border-top: 0px }
+
+/* Remove extra border on userlist */
+#userlist { border-left: 0px }
+
+/* No button box-shadow */
+.btn-default, .btn-default:hover { background-image: none; }
+
+/* Darker playlist colors */
+.queue_active {
+  background-color: #333;
+  background-image: none;
+}
+.queue_entry {
+  border-color: #111;
+  background-color: transparent;
+}
+
+/* No mod colors */
+.userlist_owner { color: none !important }
+#modflair { display: none !important }
+
+/* Remove unnecessary padding */
+#wrap { padding-bottom: 0; }
+
+/* Ensure playlist doesn't touch bottom of screen */
+#playlistrow { margin-bottom: 5px; }
+
+/* Message timestamp */
+.timestamp {
+  display: inline-block;
+  font-size: 7pt;
+  font-family: monospace;
+  font-style: normal;
+  vertical-align: top;
+  line-height: 1em;
+  margin: -4px;
+  margin-top: 6px;
+}
+
+/* ------- Unused ----------------------------------------------------------- */
+/*
+Make external images maxwidth
+.channel-emote.img {
+  max-width: 100%;
+  max-height: unset;
+}
+
+*/
