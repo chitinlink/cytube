@@ -7,13 +7,13 @@
   position: fixed;
   bottom: 0;
   right: 0;
-  background: #0c0c0c;
-  padding: 1em;
+  padding: 5px;
 }
 #admin-panel fieldset > * {
-  margin-right: 1ch;
+  margin-left: 1ch;
   font-size: 8pt;
 }
+[hidden] { display: none !important; }
 #admin-panel form { display: inline-block }
 #admin-panel input[type="text"],
 #admin-panel input[type="url"],
@@ -112,7 +112,7 @@ body { background: #111111; }
 
 /* Darker playlist colors */
 .queue_active {
-  background-color: #333;
+  background-color: #333 !important;
   background-image: none;
 }
 .queue_entry {
@@ -130,6 +130,9 @@ body { background: #111111; }
 /* Ensure playlist doesn't touch bottom of screen */
 #playlistrow { margin-bottom: 5px; }
 
+/* No modal backdrop */
+.modal-backdrop { background: unset; }
+
 /* Message timestamp */
 .timestamp {
   display: inline-block;
@@ -141,6 +144,30 @@ body { background: #111111; }
   margin: -4px;
   margin-top: 6px;
 }
+
+/* Emote list */
+#emotelist .pagination li a { background-image: unset !important }
+#emotelist .pagination { margin: 0 }
+#emotelist .modal-header, #emotelist .modal-footer
+{ display: none }
+#emotelist .modal-dialog {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+}
+
+/* Hide new poll button */
+#newpollbtn { display: none }
+
+/* Emotes button */
+#emotelistbtn { font-size: 0 }
+#emotelistbtn:after {
+  font-size: 8pt;
+  content: "Emotes";
+}
+
+/* Get rid of stupid fade effects */
+.fade { transition: none }
 
 /* ------- Unused ----------------------------------------------------------- */
 /*
