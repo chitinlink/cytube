@@ -5,8 +5,8 @@
 //
 // This script is designed to be used as the Custom JS on a cytube channel,
 // with an accompanying websocket server (see server.js). Tested with Heroku.
-// To see and use the admin panel, as well as edit cutouts you must have the
-// "Drink calls" permission. I recommend setting that to channel admin only.
+// To see and use the admin panel you must have the "Drink calls" permission.
+// I recommend setting that to channel admin only.
 
 const
   WEBSOCKET_ADDR = "wss://tabyss-cytube.herokuapp.com",
@@ -22,18 +22,6 @@ let is_op = false;
 let state = {};
 
 // Utils
-const createCutout = (image_url) => {
-  let
-    c = document.createElement("div"),
-    e = document.createElement("img");
-  c.appendChild(e);
-  c.classList.add("cutout");
-  c.id = `cutout-${id}`;
-  c.style = "--x:0px;--y:0px;";
-  e.src = image_url;
-  return c;
-};
-
 const createButton = (id, text) => {
   let b = document.createElement("button");
   b.classList.add("btn", "btn-sm", "btn-default");
@@ -109,8 +97,7 @@ const initState = () => {
 
   state = {
     "aspect_ratio": aspect_ratio,
-    "effects": {},
-    "cutouts": []
+    "effects": {}
   };
 };
 
@@ -124,8 +111,6 @@ const receiveState = state => {
   setFlipH(state["effects"]["flipH"]);
   if (!state["effects"].hasOwnProperty("flipV")) state["flipV"] = false;
   setFlipV(state["effects"]["flipV"]);
-
-  if (!state.hasOwnProperty("cutouts")) state["cutouts"] = [];
 };
 
 const sendState = () => {
@@ -147,11 +132,6 @@ const setupUI = () => {
   flipH.appendChild(flipV);
   videowrap.parentNode.appendChild(flipH);
   flipV.appendChild(videowrap);
-
-  // Cutouts
-  let cutouts = document.createElement("div");
-  cutouts.id = "cutouts";
-  videowrap.appendChild(cutouts);
 }
 // Admin panel
 const setupAdminPanel = () => {
@@ -205,19 +185,6 @@ const setupAdminPanel = () => {
   fieldset.appendChild(createButton("flipV", "FlipV"));
   document.getElementById("flipV")
     .addEventListener("click", () => setFlipV(!state["effects"]["flipV"]));
-
-  // Cutouts
-  let cutout_form = document.createElement("form")
-  fieldset.appendChild(cutout_form);
-  let cutout_url = document.createElement("input");
-  cutout_url.type = "url";
-  cutout_url.id = "cutout_url";
-  cutout_url.placeholder = "Image URL";
-  cutout_form.appendChild(cutout_url);
-  cutout_url.addEventListener("submit", e => {
-    e.preventDefault();
-    createCutout(cutout.url.value);
-  });
 };
 
 // Websocket stuff below.
