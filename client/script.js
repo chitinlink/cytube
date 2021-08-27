@@ -1,4 +1,4 @@
-// By @technoabyss 2021 galaxybra.in
+// By @technoabyss 2021 chitin.link
 // https://github.com/technoabyss/cytube
 // Thank you @PolyCement and @curvebreaker for the original concept!
 // Shouts out to boyznite!
